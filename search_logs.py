@@ -16,17 +16,18 @@ import os
 import sys
 from pathlib import Path
 
+import dotenv
 import typer
-from dotenv import load_dotenv
 from ipfabric import IPFClient
 from ipfabric.tools import DeviceConfigs
-from modules.logs_dhcp import search_dhcp_interfaces, display_dhcp_interfaces
-from modules.logs_ipf import download_logs, search_logs, display_log_compliance
+from modules.logs_dhcp import display_dhcp_interfaces, search_dhcp_interfaces
+from modules.logs_ipf import display_log_compliance, download_logs, search_logs
+from modules.logs_iosxr_rm import display_log_iosxr_rm, search_iosxr_rm
 
 with contextlib.suppress(ImportError):
     from rich import print
 # Get Current Path
-CURRENT_PATH = Path(os.path.realpath(os.path.dirname(sys.argv[0]))).resolve()
+CURRENT_FOLDER = Path(os.path.realpath(os.path.dirname(__file__)))
 # CURRENT_PATH = Path(os.path.realpath(os.path.curdir)).resolve() # for testing only
 
 app = typer.Typer(add_completion=False)
@@ -40,6 +41,12 @@ def main(
         "--dhcp-interfaces",
         "-d",
         help="Check for interfaces configured as DHCP client",
+    ),
+    iosxr_rm: bool = typer.Option(
+        False,
+        "--iosxr_rm",
+        "-xr",
+        help="Check for IOSXR Route map information",
     ),
 ):
     """
@@ -62,16 +69,17 @@ def main(
         return json_data
 
     # Load environment variables
-    load_dotenv(os.path.join(CURRENT_PATH, ".env"), override=True)
+    dotenv.load_dotenv(dotenv.find_dotenv(), override=True)
     prompt_delimiter = os.getenv("PROMPT_DELIMITER")
     device_filter = valid_json(os.getenv("DEVICES_FILTER", "{}"))
 
     # Getting data from IP Fabric and printing output
     ipf_client = IPFClient(
         base_url=os.getenv("IPF_URL"),
-        token=os.getenv("IPF_TOKEN"),
-        IPF_SNAPSHOT=os.getenv("IPF_SNAPSHOT", "$last"),
+        auth=os.getenv("IPF_TOKEN"),
+        snapshot_id=os.getenv("IPF_SNAPSHOT", "$last"),
         verify=(os.getenv("IPF_VERIFY", "False") == "True"),
+        timeout=10
     )
 
     logs = DeviceConfigs(ipf_client)
@@ -85,6 +93,9 @@ def main(
     if dhcp_intf:
         result = search_dhcp_interfaces(ipf_client, log_list, prompt_delimiter, verbose)
         display_dhcp_interfaces(result)
+    elif iosxr_rm:
+        result = search_iosxr_rm(ipf_client, log_list, "both", verbose)
+        print(result)
     else:
         input_data = valid_json(os.getenv("INPUT_DATA", ""))
         result = search_logs(input_data, log_list, prompt_delimiter, verbose)
