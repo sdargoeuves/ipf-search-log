@@ -16,7 +16,7 @@ pip install -r requirements.txt
 
 You need to copy the `.env.example` file:
 
-```zsh
+```shell
 cp .env.example .env
 ```
 
@@ -48,25 +48,37 @@ INPUT_DATA = '[
 
 Running the python script this way will give you an update showing what is compliant: `match` string has been found, and what is not compliant.
 
-```zsh
+```shell
 python3 search_logs.py
 ```
 
 You can also use the *verbose* mode which will show you what has been matched.
 
-```zsh
+```shell
 python3 search_logs.py -v
 ```
 
-There is also a `-d` option to check for interfaces with IP address assigned by DHCP
+The `-d` option checks for interfaces with IP address assigned by DHCP
 
-```zsh
+```shell
 python3 search_logs.py -d
+```
+
+The `-xr` option checks for route-policies applied to BGP peers for IOSXR.
+
+```shell
+#in .env file, change the filter
+DEVICES_FILTER = '{"family": ["like", "ios-xr"]}'
+```
+
+```shell
+# and execute the script
+python3 search_logs.py -xr
 ```
 
 ## Help
 
-```zsh
+```shell
 python3 search_logs.py --help
 ```
 
