@@ -39,11 +39,17 @@ def display_iosxr_rm(result: list):
             result_none.append(check)
 
     # ipdb.set_trace()
-    print(f"\n------------- BGP Sessions with RP in & out: {len(result_both)} -------------")
+    print(
+        f"\n------------- BGP Sessions with RP in & out: {len(result_both)} -------------"
+    )
     print(result_both) if result_both else print("None")
-    print(f"\n------------- BGP Sessions with RP in ONLY: {len(result_in_only)} -------------")
+    print(
+        f"\n------------- BGP Sessions with RP in ONLY: {len(result_in_only)} -------------"
+    )
     print(result_in_only) if result_in_only else print("None")
-    print(f"\n------------- BGP Sessions with RP out ONLY: {len(result_out_only)} -------------")
+    print(
+        f"\n------------- BGP Sessions with RP out ONLY: {len(result_out_only)} -------------"
+    )
     print(result_out_only) if result_out_only else print("None")
     print(f"\n------------- BGP Sessions without RP: {len(result_none)} -------------")
     print(result_none) if result_none else print("None")
