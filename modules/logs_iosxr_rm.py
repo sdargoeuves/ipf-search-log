@@ -6,27 +6,47 @@ Set of functions to download log file from IP Fabric and search through those
 import contextlib
 import re
 
+import ipdb
 from ipfabric import IPFClient
 
 with contextlib.suppress(ImportError):
     from rich import print
 
 
-def display_log_iosxr_rm(result: list):
+def display_iosxr_rm(result: list):
     """
     Takes the result and display if an interfce is conigured via DHCP or not
     """
-    result_ok = []
-    result_nok = []
+    result_in_only = []
+    result_out_only = []
+    result_both = []
+    result_none = []
     for check in result:
-        if check["found"] == "DHCP":
-            result_ok.append(check)
+        rp_in, rp_out = False, False
+        for rp in check["route-policy_shrun"]:
+            if type(rp) == dict and "direction" in rp.keys():
+                if "in" in rp["direction"]:
+                    rp_in = True
+                if "out" in rp["direction"]:
+                    rp_out = True
+        if rp_in and rp_out:
+            result_both.append(check)
+        elif rp_in:
+            result_in_only.append(check)
+        elif rp_out:
+            result_out_only.append(check)
         else:
-            result_nok.append(check)
-    print("\n------------- INTERFACES with DHCP -------------")
-    print(result_ok)
-    print("\n!!!!!!!!!!!!! INTERFACES NOT with DHCP !!!!!!!!!!!!!")
-    print(result_nok)
+            result_none.append(check)
+
+    # ipdb.set_trace()
+    print(f"\n------------- BGP Sessions with RP in & out: {len(result_both)} -------------")
+    print(result_both) if result_both else print("None")
+    print(f"\n------------- BGP Sessions with RP in ONLY: {len(result_in_only)} -------------")
+    print(result_in_only) if result_in_only else print("None")
+    print(f"\n------------- BGP Sessions with RP out ONLY: {len(result_out_only)} -------------")
+    print(result_out_only) if result_out_only else print("None")
+    print(f"\n------------- BGP Sessions without RP: {len(result_none)} -------------")
+    print(result_none) if result_none else print("None")
 
 
 def search_iosxr_rm(ipf_client: IPFClient, log_list, verbose: bool = False):

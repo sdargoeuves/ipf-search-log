@@ -22,7 +22,7 @@ from ipfabric import IPFClient
 from ipfabric.tools import DeviceConfigs
 from modules.logs_dhcp import display_dhcp_interfaces, search_dhcp_interfaces
 from modules.logs_ipf import display_log_compliance, download_logs, search_logs
-from modules.logs_iosxr_rm import display_log_iosxr_rm, search_iosxr_rm
+from modules.logs_iosxr_rm import display_iosxr_rm, search_iosxr_rm
 
 with contextlib.suppress(ImportError):
     from rich import print
@@ -95,7 +95,7 @@ def main(
         display_dhcp_interfaces(result)
     elif iosxr_rm:
         result = search_iosxr_rm(ipf_client, log_list, verbose)
-        print(result)
+        display_iosxr_rm(result)
     else:
         input_data = valid_json(os.getenv("INPUT_DATA", ""))
         result = search_logs(input_data, log_list, prompt_delimiter, verbose)
