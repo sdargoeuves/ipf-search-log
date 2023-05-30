@@ -28,7 +28,7 @@ with contextlib.suppress(ImportError):
     from rich import print
 # Get Current Path
 CURRENT_FOLDER = Path(os.path.realpath(os.path.dirname(__file__)))
-# CURRENT_PATH = Path(os.path.realpath(os.path.curdir)).resolve() # for testing only
+# CURRENT_PATH = Path(os.path.realpath(os.path.curdir)) # for testing only
 
 app = typer.Typer(add_completion=False)
 
@@ -79,7 +79,7 @@ def main(
         auth=os.getenv("IPF_TOKEN"),
         snapshot_id=os.getenv("IPF_SNAPSHOT", "$last"),
         verify=(os.getenv("IPF_VERIFY", "False") == "True"),
-        timeout=10
+        timeout=10,
     )
 
     logs = DeviceConfigs(ipf_client)
@@ -94,7 +94,7 @@ def main(
         result = search_dhcp_interfaces(ipf_client, log_list, prompt_delimiter, verbose)
         display_dhcp_interfaces(result)
     elif iosxr_rm:
-        result = search_iosxr_rm(ipf_client, log_list, "both", verbose)
+        result = search_iosxr_rm(ipf_client, log_list, verbose)
         print(result)
     else:
         input_data = valid_json(os.getenv("INPUT_DATA", ""))
