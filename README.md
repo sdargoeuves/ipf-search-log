@@ -6,7 +6,7 @@ Project based on the `ipf-search-config` project, this time focusing on searchin
 
 Install ipfabric Python module and dependencies. Make sure the version of the `ipfabric` SDK matches your version of IP Fabric.
 
-```sh
+```shell
 pip install -r requirements.txt
 ```
 

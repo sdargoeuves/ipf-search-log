@@ -12,6 +12,7 @@ from ipfabric import IPFClient
 with contextlib.suppress(ImportError):
     from rich import print
 
+
 def display_dhcp_interfaces(result: list):
     """
     Takes the result and display if an interfce is conigured via DHCP or not
@@ -27,6 +28,8 @@ def display_dhcp_interfaces(result: list):
     print(result_ok)
     print("\n!!!!!!!!!!!!! INTERFACES NOT with DHCP !!!!!!!!!!!!!")
     print(result_nok)
+
+
 def search_dhcp_interfaces(
     ipf_client: IPFClient, log_list, prompt_delimiter: str, verbose: bool = False
 ):
@@ -51,7 +54,7 @@ def search_dhcp_interfaces(
     result = []
     input_string = {
         "command": "show ip interface",
-        "match": "Address determined by DHCP"
+        "match": "Address determined by DHCP",
     }
     for log in log_list:
         # we search and extract the output for the show ip interface command
@@ -61,7 +64,7 @@ def search_dhcp_interfaces(
             # we search and extract the section for each interface
             for interface in get_device_interfaces(ipf_client, log["sn"]):
                 # create a deepcopy to edit the item without affecting input_strings
-                #item = copy.deepcopy(input_string)
+                # item = copy.deepcopy(input_string)
                 item = {}
                 item["hostname"] = log["hostname"]
                 item["interface"] = interface["nameOriginal"]
